@@ -1,3 +1,4 @@
+// src/pages/UserDashboard.jsx
 import React, { useEffect, useState } from "react";
 import IncidentForm from "../components/IncidentForm";
 import IncidentMap from "../components/IncidentMap";
@@ -31,36 +32,27 @@ export default function UserDashboard() {
 
       <h1 className="text-2xl font-bold mb-4">📍 WatchRadar — Submit & Track Incidents</h1>
 
-      <div className="flex flex-1 overflow-hidden gap-4">
+      {/* INCIDENT FORM */}
+      <div className="mb-4 p-4 bg-white rounded shadow">
+        <IncidentForm
+          location={selectedLocation}
+          onSubmitSuccess={fetchIncidents}
+        />
+      </div>
 
-        {/* LEFT COLUMN: Form + Feed */}
-        <div className="w-1/3 flex flex-col overflow-y-auto">
-          {/* Incident Form */}
-          <div className="mb-4 p-4 bg-white rounded shadow">
-            <IncidentForm
-              location={selectedLocation}
-              onSubmitSuccess={fetchIncidents}
-            />
-          </div>
+      {/* MAP */}
+      <div className="h-96 md:h-[500px] w-full mb-4">
+        <IncidentMap
+          incidents={incidents}
+          onMapClick={setSelectedLocation}
+        />
+      </div>
 
-          {/* Incident Feed */}
-          <div className="flex-1 p-2 bg-gray-50 border rounded overflow-y-auto">
-            {incidents.map((incident) => (
-              <IncidentCard key={incident.id} incident={incident} />
-            ))}
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: Map */}
-        <div className="w-2/3 relative flex-1">
-          <div className="absolute inset-0 rounded overflow-hidden shadow">
-            <IncidentMap
-              incidents={incidents}
-              onMapClick={setSelectedLocation}
-            />
-          </div>
-        </div>
-
+      {/* INCIDENT FEED */}
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-50 border-t">
+        {incidents.map((incident) => (
+          <IncidentCard key={incident.id} incident={incident} />
+        ))}
       </div>
     </div>
   );

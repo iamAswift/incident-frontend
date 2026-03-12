@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import IncidentCard from "../components/IncidentCard";
 import IncidentMap from "../components/IncidentMap";
@@ -35,35 +36,23 @@ export default function Home() {
         </p>
       </section>
 
-      {/* HEADER */}
-      <header className="p-4 border-b font-bold text-lg text-gray-700">
-        Community Incident Map
-      </header>
+      {/* MAP */}
+      <div className="h-96 md:h-[500px] w-full">
+        <IncidentMap
+          incidents={incidents}
+          selectedIncident={selectedIncident}
+        />
+      </div>
 
-      {/* MAIN CONTENT */}
-      <div className="flex flex-1 overflow-hidden">
-
-        {/* INCIDENT FEED */}
-        <div className="w-1/3 overflow-y-auto p-4 bg-gray-50 border-r">
-          {incidents.map((incident) => (
-            <IncidentCard
-              key={incident.id}
-              incident={incident}
-              onClick={handleCardClick}
-            />
-          ))}
-        </div>
-
-        {/* INCIDENT MAP */}
-        <div className="w-2/3 relative">
-          <div className="absolute inset-0">
-            <IncidentMap
-              incidents={incidents}
-              selectedIncident={selectedIncident}
-            />
-          </div>
-        </div>
-
+      {/* INCIDENT FEED */}
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-50 border-t">
+        {incidents.map((incident) => (
+          <IncidentCard
+            key={incident.id}
+            incident={incident}
+            onClick={handleCardClick}
+          />
+        ))}
       </div>
     </div>
   );
