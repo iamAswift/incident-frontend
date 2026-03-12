@@ -1,4 +1,3 @@
-// src/pages/UserDashboard.jsx
 import React, { useEffect, useState } from "react";
 import IncidentForm from "../components/IncidentForm";
 import IncidentMap from "../components/IncidentMap";
@@ -12,7 +11,6 @@ export default function UserDashboard() {
   const fetchIncidents = async () => {
     try {
       const res = await getIncidents();
-      // Sort by newest first
       const sorted = res.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
@@ -24,22 +22,19 @@ export default function UserDashboard() {
 
   useEffect(() => {
     fetchIncidents();
-    const interval = setInterval(fetchIncidents, 30000); // refresh every 30s
+    const interval = setInterval(fetchIncidents, 30000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="flex flex-col h-screen p-4">
 
-      {/* HEADER */}
       <h1 className="text-2xl font-bold mb-4">📍 WatchRadar — Submit & Track Incidents</h1>
 
-      {/* MAIN LAYOUT: Form + Feed + Map */}
       <div className="flex flex-1 overflow-hidden gap-4">
 
         {/* LEFT COLUMN: Form + Feed */}
         <div className="w-1/3 flex flex-col overflow-y-auto">
-          {/* Incident Form */}
           <div className="mb-4 p-4 bg-white rounded shadow">
             <IncidentForm
               location={selectedLocation}
@@ -47,7 +42,6 @@ export default function UserDashboard() {
             />
           </div>
 
-          {/* Incident Feed */}
           <div className="flex-1 p-2 bg-gray-50 border rounded overflow-y-auto">
             {incidents.map((incident) => (
               <IncidentCard
@@ -59,8 +53,9 @@ export default function UserDashboard() {
         </div>
 
         {/* RIGHT COLUMN: Map */}
-        <div className="w-2/3 flex flex-col">
-          <div className="flex-1 rounded overflow-hidden shadow">
+        <div className="w-2/3">
+          {/* Important: h-full makes Leaflet map fill this column */}
+          <div className="h-full rounded overflow-hidden shadow">
             <IncidentMap
               incidents={incidents}
               onMapClick={setSelectedLocation}

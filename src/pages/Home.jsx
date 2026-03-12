@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import IncidentCard from "../components/IncidentCard";
 import IncidentMap from "../components/IncidentMap";
@@ -11,7 +10,6 @@ export default function Home() {
   useEffect(() => {
     async function fetchIncidents() {
       const res = await getIncidents();
-      // Sort by newest first
       const sorted = res.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
@@ -44,7 +42,7 @@ export default function Home() {
         Community Incident Map
       </header>
 
-      {/* MAIN CONTENT: Incident Feed + Map */}
+      {/* MAIN CONTENT */}
       <div className="flex flex-1 overflow-hidden">
 
         {/* INCIDENT FEED */}
@@ -59,8 +57,9 @@ export default function Home() {
         </div>
 
         {/* INCIDENT MAP */}
-        <div className="w-2/3 flex flex-col">
-          <div className="flex-1">
+        <div className="w-2/3">
+          {/* Give the map a full height */}
+          <div className="h-full">
             <IncidentMap
               incidents={incidents}
               selectedIncident={selectedIncident}
