@@ -1,5 +1,5 @@
 // src/components/IncidentMap.jsx
-import React, { useEffect } from "react";
+import React from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-// Custom icons for incident types
+// Custom icons
 const icons = {
   bandit: new L.Icon({ iconUrl: "/icons8-marker-b-50.png", iconSize: [25, 41], iconAnchor: [12, 41] }),
   accident: new L.Icon({ iconUrl: "/icons8-car-accident-50.png", iconSize: [25, 41], iconAnchor: [12, 41] }),
@@ -31,21 +31,20 @@ function MapClickHandler({ onMapClick }) {
 }
 
 export default function IncidentMap({ incidents = [], onMapClick }) {
-  console.log("IncidentMap incidents:", incidents); // 🔍 Debug
+  console.log("IncidentMap incidents:", incidents);
+
   return (
-    <div style={{ height: "100%", minHeight: "500px", width: "100%", backgroundColor: "#e2e8f0" }}>
+    <div style={{ width: "100%", height: "500px", minHeight: "500px", backgroundColor: "#e2e8f0" }}>
       <MapContainer
         center={[9.082, 8.6753]}
         zoom={6}
-        style={{ height: "100%", width: "100%" }}
-        scrollWheelZoom={true}
+        style={{ width: "100%", height: "100%" }}
+        scrollWheelZoom
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* Map click */}
         {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
 
-        {/* Markers */}
         {incidents.map((incident) => {
           if (!incident.lat || !incident.lng) {
             console.warn("Skipping incident with invalid coordinates:", incident);
