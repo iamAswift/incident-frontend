@@ -10,7 +10,7 @@ export default function IncidentCard({ incident, onClick }) {
   return (
     <div
       onClick={handleClick}
-      className="p-4 mb-4 bg-white rounded-lg shadow-md cursor-pointer hover:shadow-lg transition duration-200"
+      className="p-4 mb-4 bg-white rounded-lg shadow-md cursor-pointer hover:shadow-lg transition duration-200 border border-gray-200"
     >
       {/* Title */}
       <h3 className="font-bold text-lg text-gray-900">{incident.title}</h3>
@@ -20,7 +20,7 @@ export default function IncidentCard({ incident, onClick }) {
 
       {/* Photo */}
       {incident.photo_url && (
-        <div className="mt-2 overflow-hidden rounded-lg h-48">
+        <div className="mt-2 overflow-hidden rounded-lg h-48 shadow-inner">
           <img
             src={incident.photo_url}
             alt="incident"
@@ -30,7 +30,7 @@ export default function IncidentCard({ incident, onClick }) {
       )}
 
       {/* Timestamp */}
-      <p className="text-sm text-gray-400 mt-2">
+      <p className="text-sm text-gray-500 mt-3">
         {incident.created_at || incident.date || incident.timestamp
           ? new Date(
               incident.created_at || incident.date || incident.timestamp

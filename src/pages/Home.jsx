@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import IncidentCard from "../components/IncidentCard";
 import IncidentMap from "../components/IncidentMap";
@@ -37,7 +36,7 @@ export default function Home() {
       </section>
 
       {/* MAP */}
-      <div className="h-96 md:h-[500px] w-full">
+      <div className="w-full h-96 md:h-[500px]">
         <IncidentMap
           incidents={incidents}
           selectedIncident={selectedIncident}

@@ -1,4 +1,3 @@
-// src/pages/UserDashboard.jsx
 import React, { useEffect, useState } from "react";
 import IncidentForm from "../components/IncidentForm";
 import IncidentMap from "../components/IncidentMap";
@@ -41,7 +40,7 @@ export default function UserDashboard() {
       </div>
 
       {/* MAP */}
-      <div className="h-96 md:h-[500px] w-full mb-4">
+      <div className="w-full h-96 md:h-[500px] mb-4">
         <IncidentMap
           incidents={incidents}
           onMapClick={setSelectedLocation}
