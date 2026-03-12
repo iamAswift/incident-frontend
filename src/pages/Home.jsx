@@ -23,8 +23,31 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="p-4 border-b font-bold text-xl">Incident Tracker</header>
+
+      {/* HERO SECTION */}
+
+      <section className="bg-gray-50 py-6 border-b text-center">
+          <h1 className="text-3xl font-bold mb-2">📍 WatchRadar</h1>
+
+          <p className="text-gray-600 mt-2">
+            A community-powered incident map helping citizens stay informed
+            and make safer decisions in real time.
+          </p>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Report incidents • View community alerts • Help keep others safe.
+          </p>
+      </section>
+
+      {/* EXISTING HEADER */}
+      <header className="p-4 border-b font-bold text-lg text-gray-700">
+        Community Incident Map
+      </header>
+
+      {/* EXISTING MAP + LIST */}
       <div className="flex flex-1 overflow-hidden">
+
+        {/* INCIDENT LIST */}
         <div className="w-1/3 overflow-y-auto p-4 border-r">
           {incidents.map((incident) => (
             <IncidentCard
@@ -34,6 +57,8 @@ export default function Home() {
             />
           ))}
         </div>
+
+        {/* INCIDENT MAP */}
         <div className="w-2/3">
           <IncidentMap incidents={incidents} selectedIncident={selectedIncident} />
         </div>
