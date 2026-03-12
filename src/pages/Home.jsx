@@ -10,7 +10,6 @@ export default function Home() {
   useEffect(() => {
     async function fetchIncidents() {
       const res = await getIncidents();
-      // Sort newest first
       const sorted = res.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
@@ -56,14 +55,15 @@ export default function Home() {
         </div>
 
         {/* INCIDENT MAP */}
-        <div className="w-2/3 flex flex-col">
-          <div className="flex-1 min-h-[500px]">
+        <div className="w-2/3 relative">
+          <div className="absolute inset-0">
             <IncidentMap
               incidents={incidents}
               selectedIncident={selectedIncident}
             />
           </div>
         </div>
+
       </div>
     </div>
   );

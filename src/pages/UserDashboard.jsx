@@ -52,8 +52,8 @@ export default function UserDashboard() {
         </div>
 
         {/* RIGHT COLUMN: Map */}
-        <div className="w-2/3 flex flex-col">
-          <div className="flex-1 min-h-[500px] rounded overflow-hidden shadow">
+        <div className="w-2/3 relative flex-1">
+          <div className="absolute inset-0 rounded overflow-hidden shadow">
             <IncidentMap
               incidents={incidents}
               onMapClick={setSelectedLocation}
