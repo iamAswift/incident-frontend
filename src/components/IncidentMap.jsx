@@ -1,4 +1,5 @@
-import React from "react";
+// src/components/IncidentMap.jsx
+import React, { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -19,7 +20,7 @@ const icons = {
   kidnapping: new L.Icon({ iconUrl: "/icons8-hostage-64.png", iconSize: [25, 41], iconAnchor: [12, 41] }),
 };
 
-// Handle map clicks
+// Map click handler
 function MapClickHandler({ onMapClick }) {
   useMapEvents({
     click(e) {
@@ -30,40 +31,53 @@ function MapClickHandler({ onMapClick }) {
 }
 
 export default function IncidentMap({ incidents = [], onMapClick }) {
+
+  useEffect(() => {
+    console.log("IncidentMap incidents:", incidents);
+  }, [incidents]);
+
   return (
-    <MapContainer
-      center={[9.082, 8.6753]}
-      zoom={6}
-      style={{ height: "100%", width: "100%" }}
-      scrollWheelZoom={true}
-    >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <div style={{ height: "100%", minHeight: "500px", width: "100%", backgroundColor: "#e2e8f0" }}>
+      <MapContainer
+        center={[9.082, 8.6753]}
+        zoom={6}
+        style={{ height: "100%", width: "100%" }}
+        scrollWheelZoom={true}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {/* Click handler */}
-      {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
+        {/* Map click */}
+        {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
 
-      {/* Incident markers */}
-      {incidents.map((incident) => (
-        <Marker
-          key={incident.id}
-          position={[incident.lat, incident.lng]}
-          icon={icons[incident.type] || new L.Icon.Default()}
-        >
-          <Popup>
-            <strong>{incident.title}</strong>
-            <p>{incident.description}</p>
-            {incident.date && <p>Date: {new Date(incident.date).toLocaleString()}</p>}
-            {incident.photo_url && (
-              <img
-                src={incident.photo_url} // <-- Use backend-provided URL
-                alt={incident.title}
-                width={150}
-                className="mt-2 max-w-full h-auto rounded"
-              />
-            )}
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+        {/* Markers */}
+        {incidents.map((incident) => {
+          if (!incident.lat || !incident.lng) {
+            console.warn("Skipping incident with invalid coordinates:", incident);
+            return null;
+          }
+          return (
+            <Marker
+              key={incident.id}
+              position={[incident.lat, incident.lng]}
+              icon={icons[incident.type] || new L.Icon.Default()}
+            >
+              <Popup>
+                <strong>{incident.title}</strong>
+                <p>{incident.description}</p>
+                {incident.date && <p>Date: {new Date(incident.date).toLocaleString()}</p>}
+                {incident.photo_url && (
+                  <img
+                    src={incident.photo_url}
+                    alt={incident.title}
+                    width={150}
+                    className="mt-2 max-w-full h-auto rounded"
+                  />
+                )}
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
   );
 }
