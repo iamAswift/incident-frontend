@@ -31,11 +31,7 @@ function MapClickHandler({ onMapClick }) {
 }
 
 export default function IncidentMap({ incidents = [], onMapClick }) {
-
-  useEffect(() => {
-    console.log("IncidentMap incidents:", incidents);
-  }, [incidents]);
-
+  console.log("IncidentMap incidents:", incidents); // 🔍 Debug
   return (
     <div style={{ height: "100%", minHeight: "500px", width: "100%", backgroundColor: "#e2e8f0" }}>
       <MapContainer
