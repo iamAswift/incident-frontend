@@ -52,7 +52,7 @@ export default function Home() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* INCIDENT LIST */}
-        <div className="w-1/3 overflow-y-auto p-4 border-r">
+        <div className="w-1/3 overflow-y-auto p-4 border-r bg-gray-50">
           {incidents.map((incident) => (
             <IncidentCard
               key={incident.id}

@@ -12,27 +12,31 @@ export default function IncidentCard({ incident, onClick }) {
       onClick={handleClick}
       className="p-4 mb-2 border rounded shadow cursor-pointer hover:bg-gray-50"
     >
-      <h3 className="font-bold text-lg">{incident.title}</h3>
+      {/* Title */}
+      <h3 className="font-bold text-lg text-gray-900">{incident.title}</h3>
 
-      <p className="text-gray-700">{incident.description}</p>
+      {/* Description */}
+      <p className="text-gray-700 mt-2">{incident.description}</p>
 
+      {/* Photo */}
       {incident.photo_url && (
-        <div className="mt-2 overfloen-hidden rounded h-48">
+        <div className="mt-2 overflow-hidden rounded h-48">
           <img 
             src={incident.photo_url} 
             alt="incident" 
-            className="mt-2 rounded" 
+            className="w-full h-full object-cover" 
           />
         </div>
 
       )}
 
+      {/* Timestamp */}
       <p className="text-sm text-gray-400 mt-1">
         {incident.created_at || incident.date || incident.timestamp
           ? new Date(
               incident.created_at || incident.date || incident.timestamp
             ).toLocaleString()
-          : "Reported justnow"}
+          : "Reported just now"}
           
       </p>
     </div>

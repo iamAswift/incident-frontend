@@ -9,12 +9,14 @@ export default function UserDashboard() {
   const [incidents, setIncidents] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
-  // Fetch incidents from backend
+  // Fetch incidents from backend and sort by newest first
   const fetchIncidents = async () => {
     try {
       const res = await getIncidents();
-      console.log("INCIDENT API DATA:", res.data); // Debug log
-      setIncidents(res.data);
+      const sorted = res.data.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      );
+      setIncidents(sorted);
     } catch (err) {
       console.error("Error fetching incidents:", err);
     }
@@ -28,31 +30,52 @@ export default function UserDashboard() {
   }, []);
 
   return (
-    <div className="p-4" style={{ height: "100vh", width: "100%" }}>
-      <h1 className="text-xl font-bold mb-4">Incident Reporting</h1>
+    <div className="flex flex-col h-screen">
 
-      {/* Incident submission form */}
-      <IncidentForm
-        location={selectedLocation}       // Auto-fill lat/lng from map
-        onSubmitSuccess={fetchIncidents}  // Refresh incidents after submit
-      />
+      {/* Hero / Dashboard Header */}
+      <section className="bg-gray-50 py-6 border-b text-center">
+        <h1 className="text-3xl font-bold mb-2">📍 WatchRadar Dashboard</h1>
+        <p className="text-gray-600 mt-2">
+          Submit incidents and track community reports in real-time
+        </p>
+        <p className="text-sm text-gray-500 mt-1">
+          Report incidents • View alerts • Keep your community safe
+        </p>
+      </section>
 
-      {/* Map */}
-      <div style={{ height: "500px", marginBottom: "20px" }}>
-        <IncidentMap
-          incidents={incidents}
-          onMapClick={setSelectedLocation} // Clicking map sets selected location
-        />
+      <div className="flex flex-1 overflow-hidden p-4">
+
+        {/* Left column: Incident submission + feed */}
+        <div className="w-1/3 flex flex-col overflow-y-auto pr-4">
+          
+          {/* Submission Form */}
+          <IncidentForm
+            location={selectedLocation}
+            onSubmitSuccess={fetchIncidents}
+          />
+
+          {/* Incident Feed */}
+          <h2 className="font-bold text-lg mb-2 mt-4">Community Incident Feed</h2>
+          <div className="flex-1 overflow-y-auto">
+            {incidents.map((incident) => (
+              <IncidentCard
+                key={incident.id}
+                incident={incident}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Right column: Map */}
+        <div className="w-2/3">
+          <IncidentMap
+            incidents={incidents}
+            selectedIncident={selectedLocation}
+            onMapClick={setSelectedLocation} // clicking map sets form location
+          />
+        </div>
+
       </div>
-
-      {/* Incident feed */}
-      <h2 className="mt-6 font-semibold">Incident Feed</h2>
-      {incidents.map((incident) => (
-        <IncidentCard
-          key={incident.id}
-          incident={incident}
-        />
-      ))}
     </div>
   );
 }
