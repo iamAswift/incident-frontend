@@ -10,7 +10,7 @@ export default function IncidentCard({ incident, onClick }) {
   return (
     <div
       onClick={handleClick}
-      className="p-4 mb-2 border rounded shadow cursor-pointer hover:bg-gray-50"
+      className="p-4 mb-4 bg-white rounded-lg shadow-md cursor-pointer hover:shadow-lg transition duration-200"
     >
       {/* Title */}
       <h3 className="font-bold text-lg text-gray-900">{incident.title}</h3>
@@ -20,24 +20,22 @@ export default function IncidentCard({ incident, onClick }) {
 
       {/* Photo */}
       {incident.photo_url && (
-        <div className="mt-2 overflow-hidden rounded h-48">
-          <img 
-            src={incident.photo_url} 
-            alt="incident" 
-            className="w-full h-full object-cover" 
+        <div className="mt-2 overflow-hidden rounded-lg h-48">
+          <img
+            src={incident.photo_url}
+            alt="incident"
+            className="w-full h-full object-cover"
           />
         </div>
-
       )}
 
       {/* Timestamp */}
-      <p className="text-sm text-gray-400 mt-1">
+      <p className="text-sm text-gray-400 mt-2">
         {incident.created_at || incident.date || incident.timestamp
           ? new Date(
               incident.created_at || incident.date || incident.timestamp
             ).toLocaleString()
           : "Reported just now"}
-          
       </p>
     </div>
   );

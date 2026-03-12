@@ -10,6 +10,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchIncidents() {
       const res = await getIncidents();
+      // Sort newest first
       const sorted = res.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
@@ -18,9 +19,7 @@ export default function Home() {
     fetchIncidents();
   }, []);
 
-  const handleCardClick = (incident) => {
-    setSelectedIncident(incident);
-  };
+  const handleCardClick = (incident) => setSelectedIncident(incident);
 
   return (
     <div className="flex flex-col h-screen">
@@ -57,9 +56,8 @@ export default function Home() {
         </div>
 
         {/* INCIDENT MAP */}
-        <div className="w-2/3">
-          {/* Give the map a full height */}
-          <div className="h-full">
+        <div className="w-2/3 flex flex-col">
+          <div className="flex-1 min-h-[500px]">
             <IncidentMap
               incidents={incidents}
               selectedIncident={selectedIncident}

@@ -35,6 +35,7 @@ export default function UserDashboard() {
 
         {/* LEFT COLUMN: Form + Feed */}
         <div className="w-1/3 flex flex-col overflow-y-auto">
+          {/* Incident Form */}
           <div className="mb-4 p-4 bg-white rounded shadow">
             <IncidentForm
               location={selectedLocation}
@@ -42,26 +43,24 @@ export default function UserDashboard() {
             />
           </div>
 
+          {/* Incident Feed */}
           <div className="flex-1 p-2 bg-gray-50 border rounded overflow-y-auto">
             {incidents.map((incident) => (
-              <IncidentCard
-                key={incident.id}
-                incident={incident}
-              />
+              <IncidentCard key={incident.id} incident={incident} />
             ))}
           </div>
         </div>
 
         {/* RIGHT COLUMN: Map */}
-        <div className="w-2/3">
-          {/* Important: h-full makes Leaflet map fill this column */}
-          <div className="h-full rounded overflow-hidden shadow">
+        <div className="w-2/3 flex flex-col">
+          <div className="flex-1 min-h-[500px] rounded overflow-hidden shadow">
             <IncidentMap
               incidents={incidents}
               onMapClick={setSelectedLocation}
             />
           </div>
         </div>
+
       </div>
     </div>
   );

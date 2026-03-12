@@ -1,4 +1,3 @@
-// src/components/IncidentMap.jsx
 import React from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
@@ -54,9 +53,9 @@ export default function IncidentMap({ incidents = [], onMapClick }) {
             <strong>{incident.title}</strong>
             <p>{incident.description}</p>
             {incident.date && <p>Date: {new Date(incident.date).toLocaleString()}</p>}
-            {incident.photo_filename && (
+            {incident.photo_url && (
               <img
-                src={`http://localhost:5000/uploads/${incident.photo_filename}`}
+                src={incident.photo_url} // <-- Use backend-provided URL
                 alt={incident.title}
                 width={150}
                 className="mt-2 max-w-full h-auto rounded"
