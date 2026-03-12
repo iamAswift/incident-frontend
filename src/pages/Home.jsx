@@ -11,7 +11,11 @@ export default function Home() {
   useEffect(() => {
     async function fetchIncidents() {
       const res = await getIncidents();
-      setIncidents(res.data);
+
+      // Sort by created_at descending (latest first)
+      const sorted = res.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      setIncidents(sorted);
     }
     fetchIncidents();
   }, []);

@@ -17,7 +17,14 @@ export default function IncidentCard({ incident, onClick }) {
       <p className="text-gray-700">{incident.description}</p>
 
       {incident.photo_url && (
-        <img src={incident.photo_url} alt="incident" className="mt-2 rounded" />
+        <div className="mt-2 overfloen-hidden rounded h-48">
+          <img 
+            src={incident.photo_url} 
+            alt="incident" 
+            className="mt-2 rounded" 
+          />
+        </div>
+
       )}
 
       <p className="text-sm text-gray-400 mt-1">
