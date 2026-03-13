@@ -12,6 +12,11 @@ code {
     monospace;
 }
 
+/* Ensure geocoder is fully visible */
+.leaflet-top.leaflet-right {
+  z-index: 1100; /* higher than most leaflet elements */
+}
+
 /* Leaflet Geocoder search box */
 .leaflet-control-geocoder {
   width: 250px !important;

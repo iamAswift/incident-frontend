@@ -68,7 +68,7 @@ function MapClickHandler({ onMapClick }) {
   return null;
 }
 
-// Address search control
+// Address search control with visible search button
 function AddressSearch({ onLocationSelect }) {
   const map = useMap();
 
@@ -77,18 +77,34 @@ function AddressSearch({ onLocationSelect }) {
       defaultMarkGeocode: false,
       placeholder: "Search for address...",
       position: "topright",
-    })
-      .on("markgeocode", function (e) {
-        const latlng = e.geocode.center;
+    }).addTo(map);
+
+    // Add a clickable search button
+    const input = control.getContainer().querySelector("input");
+    const btn = document.createElement("button");
+    btn.innerHTML = "🔍";
+    btn.title = "Search";
+    btn.style.marginLeft = "4px";
+    btn.onclick = () => {
+      const query = input.value;
+      if (!query) return;
+
+      control.options.geocoder.geocode(query, (results) => {
+        if (!results || results.length === 0) return;
+        const result = results[0];
+        const latlng = result.center;
         map.setView(latlng, 16);
-
-        if (onLocationSelect) {
-          onLocationSelect({ lat: latlng.lat, lng: latlng.lng });
-        }
-
         L.marker(latlng).addTo(map);
-      })
-      .addTo(map);
+        if (onLocationSelect) onLocationSelect({ lat: latlng.lat, lng: latlng.lng });
+      });
+    };
+
+    control.getContainer().appendChild(btn);
+
+    // Handle Enter key
+    input.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") btn.click();
+    });
 
     return () => map.removeControl(control);
   }, [map, onLocationSelect]);
