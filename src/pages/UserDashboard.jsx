@@ -94,6 +94,7 @@ export default function UserDashboard() {
         <IncidentMap
           incidents={incidents}
           onMapClick={handleLocationSelect}
+          onLocationSelect={handleLocationSelect}
         />
 
       </div>
