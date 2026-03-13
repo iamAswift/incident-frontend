@@ -73,6 +73,12 @@ function AddressSearch({ onLocationSelect }) {
   const map = useMap();
 
   React.useEffect(() => {
+    console.log("Address search mounted, map:", map);
+
+    if (!map) {
+      console.warn("Map not available for AddressSearch");
+      return;
+    }
     const control = L.Control.geocoder({
       defaultMarkGeocode: false,
       placeholder: "Search for address...",
