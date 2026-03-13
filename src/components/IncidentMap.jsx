@@ -16,7 +16,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-control-geocoder";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 
-import * as LControlGeocoder from "leaflet-control-geocoder";
 
 
 // Fix default marker icons
@@ -82,10 +81,8 @@ function AddressSearch({ onLocationSelect }) {
 
   React.useEffect(() => {
 
-    const geocoder = LControlGeocoder.geocoder();
 
-    const control = LControlGeocoder.control({
-      geocoder,
+    const control = L.Control.geocoder({
       defaultMarkGeocode: false,
     })
       .on("markgeocode", function (e) {
