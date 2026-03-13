@@ -84,6 +84,8 @@ function AddressSearch({ onLocationSelect }) {
 
     const control = L.Control.geocoder({
       defaultMarkGeocode: false,
+      placeholder:  "Search for address...",
+      position: "topright",
     })
       .on("markgeocode", function (e) {
 
