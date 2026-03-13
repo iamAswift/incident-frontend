@@ -89,7 +89,7 @@ export default function UserDashboard() {
       </div>
 
       {/* MAP */}
-      <div className="w-full h-96 md:h-[500px] mb-4">
+      <div className="w-full mb-4" style = {{ height: "500px", minHeight: "500px" }}>
 
         <IncidentMap
           incidents={incidents}

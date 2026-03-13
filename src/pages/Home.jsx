@@ -87,7 +87,7 @@ export default function Home() {
       </section>
 
       {/* MAP */}
-      <div className="w-full h-96 md:h-[500px]">
+      <div className="w-full mb-4" style={{ height: "500px", minHeight: "500px" }}>
 
         <IncidentMap
           incidents={incidents}
