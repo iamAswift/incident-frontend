@@ -95,7 +95,7 @@ function AddressSearch({ onLocationSelect }) {
     btn.style.padding = "2px 6px";
     btn.style.borderRadius = "4px";
     btn.style.border = "1px solid #ccc";
-    
+
     btn.onclick = () => {
       const query = input.value;
       if (!query) return;
@@ -113,9 +113,10 @@ function AddressSearch({ onLocationSelect }) {
         console.log("location found:", latlng);
 
         if (result.bbox) {
+          const [south, north, west, east] = result.bbox;
           map.fitBounds([
-            [results.bbox[0], results.bbox[2]],
-            [results.bbox[1], results.bbox[3]],
+            [south, west],
+            [north, east],
           ]);
         } else {
           map.setView(latlng, 15);
