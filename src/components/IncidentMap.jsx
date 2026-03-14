@@ -126,8 +126,12 @@ export default function IncidentMap({
   return (
     <div style={{ width: "100%", height: "500px", minHeight: "500px" }}>
       <MapContainer
-        center={[9.082, 8.6753]}
-        zoom={6}
+        center={[9.0765, 7.3986]} // Center on Nigeria
+        zoom={12}
+        maxBounds={[
+          [8.7, 7.0], // Southwest 
+          [9.4, 7.8], // Northeast
+        ]}
         style={{ width: "100%", height: "100%" }}
         scrollWheelZoom
       >
