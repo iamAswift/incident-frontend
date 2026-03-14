@@ -15,7 +15,6 @@ import "leaflet/dist/leaflet.css";
 
 import "leaflet-control-geocoder";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
-import { geocoder } from "leaflet-control-geocoder";
 
 // Fix default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
