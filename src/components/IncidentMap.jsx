@@ -94,11 +94,18 @@ function AddressSearch({ onLocationSelect }) {
     btn.onclick = () => {
       const query = input.value;
       if (!query) return;
+      console.log("searching for:", query);
 
       control.options.geocoder.geocode(query, (results) => {
-        if (!results || results.length === 0) return;
+        console.log("Geocode results:", results);
+        if (!results || results.length === 0){
+          console.log("No location found");
+          return;
+        } 
         const result = results[0];
         const latlng = result.center;
+
+        console.log("location found:", latlng);
 
         if (results.bbox) {
           map.fitBounds([
