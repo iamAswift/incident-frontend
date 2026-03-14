@@ -81,7 +81,7 @@ function AddressSearch({ onLocationSelect }) {
     }
     const control = L.Control.geocoder({
       defaultMarkGeocode: false,
-      placeholder: "Search for address...",
+      placeholder: "Search Abuja area (e.g lugbe)...",
       position: "topright",
     }).addTo(map);
 
@@ -99,7 +99,15 @@ function AddressSearch({ onLocationSelect }) {
         if (!results || results.length === 0) return;
         const result = results[0];
         const latlng = result.center;
-        map.setView(latlng, 16);
+
+        if (results.bbox) {
+          map.fitBounds([
+            [results.bbox[0], results.bbox[2]],
+            [results.bbox[1], results.bbox[3]],
+          ]);
+        } else {
+          map.setView(latlng, 15);
+        }
         L.marker(latlng).addTo(map);
         if (onLocationSelect) onLocationSelect({ lat: latlng.lat, lng: latlng.lng });
       });
@@ -129,8 +137,8 @@ export default function IncidentMap({
         center={[9.0765, 7.3986]} // Center on Nigeria
         zoom={12}
         maxBounds={[
-          [8.7, 7.0], // Southwest 
-          [9.4, 7.8], // Northeast
+          [8.4, 6.7], // Southwest 
+          [9.7, 8.2], // Northeast
         ]}
         style={{ width: "100%", height: "100%" }}
         scrollWheelZoom
