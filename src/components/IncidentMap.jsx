@@ -15,6 +15,7 @@ import "leaflet/dist/leaflet.css";
 
 import "leaflet-control-geocoder";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
+import { geocoder } from "leaflet-control-geocoder";
 
 // Fix default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -81,7 +82,8 @@ function AddressSearch({ onLocationSelect }) {
     }
     const control = L.Control.geocoder({
       defaultMarkGeocode: false,
-      placeholder: "Search Abuja area (e.g lugbe)...",
+      geocoder: L.Control.Geocoder.nominatim(),
+      placeholder: "Search Abuja area to see streetMap (e.g lugbe)...",
       position: "topright",
     }).addTo(map);
 
