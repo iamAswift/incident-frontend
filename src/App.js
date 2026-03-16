@@ -36,7 +36,7 @@ export default function App() {
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, [isAndroid]);
 
-  // Handle install click (Android/Desktop)
+  // Handle install click (Android & Desktop)
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -46,49 +46,47 @@ export default function App() {
     setShowInstallBtn(false);
   };
 
+  // Banner visibility
+  const showIosBanner = isIos && !showInstallBtn; // show iOS banner until dismissed
+  const showAndroidBanner = isAndroid && showInstallBtn;
+  const showDesktopBanner = !isIos && !isAndroid && showInstallBtn;
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
 
-        {/* PWA Install Banner / Button */}
-        {showInstallBtn && (
-          <>
-            {/* iOS instruction banner */}
-            {isIos && (
-              <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-11/12 md:w-2/3 bg-blue-500 text-white text-center font-semibold rounded-xl shadow-lg p-4 flex flex-col md:flex-row items-center justify-between gap-2 z-50">
-                <span className="text-sm md:text-base">
-                  📱 Tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to install WatchRadar
-                </span>
-                <button
-                  className="bg-white text-blue-500 px-3 py-1 rounded font-semibold hover:bg-gray-100"
-                  onClick={() => setShowInstallBtn(false)}
-                >
-                  ✖ Dismiss
-                </button>
-              </div>
-            )}
+        {/* PWA Install Banners */}
+        {showIosBanner && (
+          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-11/12 md:w-2/3 bg-blue-500 text-white text-center font-semibold rounded-xl shadow-lg p-4 flex flex-col md:flex-row items-center justify-between gap-2 z-50">
+            <span className="text-sm md:text-base">
+              📱 Tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to install WatchRadar
+            </span>
+            <button
+              className="bg-white text-blue-500 px-3 py-1 rounded font-semibold hover:bg-gray-100"
+              onClick={() => setShowInstallBtn(true)} // dismiss sets Android banner ready if available
+            >
+              ✖ Dismiss
+            </button>
+          </div>
+        )}
 
-            {/* Android install button */}
-            {isAndroid && (
-              <div
-                className="p-2 bg-green-500 text-white text-center font-semibold rounded shadow cursor-pointer animate-pulse m-4"
-                onClick={handleInstallClick}
-              >
-                📱 Install WatchRadar on your mobile
-              </div>
-            )}
+        {showAndroidBanner && (
+          <div
+            className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-11/12 md:w-2/3 bg-green-500 text-white text-center font-semibold rounded-xl shadow-lg p-4 cursor-pointer animate-pulse z-50"
+            onClick={handleInstallClick}
+          >
+            📱 Install WatchRadar on your mobile
+          </div>
+        )}
 
-            {/* Desktop install button */}
-            {!isIos && !isAndroid && (
-              <div
-                className="p-2 bg-yellow-500 text-white text-center font-semibold rounded shadow cursor-pointer animate-bounce m-4"
-                onClick={handleInstallClick}
-              >
-                🚀 Install WatchRadar
-              </div>
-            )}
-          </>
+        {showDesktopBanner && (
+          <div
+            className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-1/3 bg-yellow-500 text-white text-center font-semibold rounded-xl shadow-lg p-4 cursor-pointer animate-bounce z-50"
+            onClick={handleInstallClick}
+          >
+            🚀 Install WatchRadar
+          </div>
         )}
 
         {/* Main content */}
