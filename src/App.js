@@ -55,8 +55,15 @@ export default function App() {
         <div className="p-4">
           {/* iOS instruction */}
           {isIos && (
-            <div className="p-2 bg-blue-500 text-white text-center font-semibold rounded shadow animate-pulse">
-              📱 Tap Share → Add to Home Screen to install WatchRadar
+            <div className="p-2 bg-blue-500 text-white text-center font-semibold rounded shadow animate-pulse flex justify-between items-center">
+              <span> 📱 Tap Share → Add to Home Screen to install WatchRadar </span>
+              <button
+                className="ml-2 bg-white text-blue-500 px-2 py-1 rounded font-semibold"
+                onClick={() => setShowInstallBtn(false)}
+              >
+                ✖
+              </button>
+              
             </div>
           )}
 
