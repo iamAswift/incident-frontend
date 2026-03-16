@@ -1,120 +1,61 @@
-import { useState, useEffect } from "react";
-import { createIncident } from "../services/api";
+// src/components/IncidentForm.jsx
+import React, { useState } from "react";
 
-export default function IncidentForm({ location, onSubmitSuccess }) {
-  const [title, setTitle] = useState("");
+export default function IncidentForm() {
+  const [estate, setEstate] = useState("");
+  const [type, setType] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState("bandit"); // default type
-  const [photo, setPhoto] = useState(null);
 
-  // Auto-fill lat/lng when user clicks map
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-
-  useEffect(() => {
-    if (location) {
-      setLatitude(location.lat);
-      setLongitude(location.lng);
-    }
-  }, [location]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!title || !description || !latitude || !longitude) {
-      alert("Please fill in all fields and select a location on the map.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("lat", latitude);
-    formData.append("lng", longitude);
-    formData.append("type", type);
-    formData.append("created_at", new Date().toISOString());
-    if (photo) formData.append("photo", photo);
-
-    // Debugging
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
-    try {
-      const res = await createIncident(formData);
-      console.log("Incident submitted:", res.data);
-      // Reset form
-      setTitle("");
-      setDescription("");
-      setType("bandit");
-      setLatitude("");
-      setLongitude("");
-      setPhoto(null);
-      if (onSubmitSuccess) onSubmitSuccess();
-      alert("Incident submitted!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to submit incident.");
-    }
+  const submitIncident = () => {
+    if (!estate || !type || !description) return;
+    alert(`Incident reported for ${estate}: ${type}`);
+    setEstate("");
+    setType("");
+    setDescription("");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 p-2 border rounded shadow">
-      <input
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="block w-full mb-2 p-1 border rounded"
-        required
-      />
-      <textarea
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="block w-full mb-2 p-1 border rounded"
-        required
-      />
-      <select
-        value={type}
-        onChange={(e) => setType(e.target.value)}
-        className="block w-full mb-2 p-1 border rounded"
-      >
-        <option value="bandit">Bandit Infestation</option>
-        <option value="accident">Accident</option>
-        <option value="robbery">Robbery</option>
-        <option value="kidnapping">Kidnapping</option>
-      </select>
-      <div className="mb-2 flex gap-2">
+    <div>
+      <h2 className="text-xl font-bold mb-2">Report Incident</h2>
+      <div className="mb-2">
         <input
           type="text"
-          placeholder="Latitude"
-          value={latitude}
-          readOnly
-          className="w-1/2 p-1 border rounded"
-        />
-        <input
-          type="text"
-          placeholder="Longitude"
-          value={longitude}
-          readOnly
-          className="w-1/2 p-1 border rounded"
+          placeholder="Estate"
+          value={estate}
+          onChange={(e) => setEstate(e.target.value)}
+          className="border px-2 py-1 mr-2 rounded"
         />
       </div>
-
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setPhoto(e.target.files[0])}
-        className="mb-2"
-      />
-
+      <div className="mb-2">
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          className="border px-2 py-1 mr-2 rounded"
+        >
+          <option value="">Select Type</option>
+          <option value="Security Breach">Security Breach</option>
+          <option value="Theft/vandalism">Theft/vandalism</option>
+          <option value="Fire Incident">Fire Incident</option>
+          <option value="Medical Emergency">Medical Emergency</option>
+          <option value="Suspicious Activity">Suspicious Activity</option>
+          <option value="Noise">Noise</option>
+          <option value="Illegal Gathering">Illegal Gathering</option>
+        </select>
+      </div>
+      <div className="mb-2">
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="border px-2 py-1 mr-2 rounded w-full"
+        />
+      </div>
       <button
-        type="submit"
-        className="p-2 bg-blue-500 text-white rounded"
+        onClick={submitIncident}
+        className="bg-yellow-500 text-white px-3 py-1 rounded"
       >
-        Submit Incident
+        Submit
       </button>
-    </form>
+    </div>
   );
 }
