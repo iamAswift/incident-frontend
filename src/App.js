@@ -1,47 +1,60 @@
-// src/App.jsx
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+// src/App.js
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import ManagerDashboard from "./components/ManagerDashboard";
 import SecurityDashboard from "./components/SecurityDashboard";
 import IncidentForm from "./components/IncidentForm";
 import Navbar from "./components/Navbar";
+import { register } from "./serviceWorkerRegistration"; // PWA service worker
 
 export default function App() {
-  // Mock login / user selection for MVP
-  const [userType, setUserType] = useState("manager"); 
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  // Listen for PWA install event
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log("User response to install:", outcome);
+    setDeferredPrompt(null);
+    setShowInstallBtn(false);
+  };
+
+  // Register service worker
+  useEffect(() => {
+    register();
+  }, []);
 
   return (
     <Router>
-      <Navbar />
-
-      <div className="p-4">
-        {/* Simple user type switch for MVP */}
-        <div className="mb-4 space-x-2">
-          <button
-            className="px-3 py-1 bg-blue-500 text-white rounded"
-            onClick={() => setUserType("manager")}
-          >
-            Manager
-          </button>
-          <button
-            className="px-3 py-1 bg-green-500 text-white rounded"
-            onClick={() => setUserType("security")}
-          >
-            Security
-          </button>
-          <button
-            className="px-3 py-1 bg-yellow-500 text-white rounded"
-            onClick={() => setUserType("reporter")}
-          >
-            Report Incident
-          </button>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        {showInstallBtn && (
+          <div className="p-2 bg-blue-500 text-white text-center cursor-pointer" onClick={handleInstallClick}>
+            Install WatchRadar
+          </div>
+        )}
+        <div className="p-4">
+          <Routes>
+            <Route path="/" element={<ManagerDashboard />} />
+            <Route path="/manager" element={<ManagerDashboard />} />
+            <Route path="/security" element={<SecurityDashboard />} />
+            <Route path="/report" element={<IncidentForm />} />
+          </Routes>
         </div>
-
-        {/* Conditional rendering based on userType */}
-        {userType === "manager" && <ManagerDashboard />}
-        {userType === "security" && <SecurityDashboard />}
-        {userType === "reporter" && <IncidentForm />}
       </div>
     </Router>
   );
