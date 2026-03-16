@@ -11,6 +11,15 @@ import { register } from "./serviceWorkerRegistration"; // PWA service worker
 export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBtn, setShowInstallBtn] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  // Detect if device is mobile and if it's iOS
+  useEffect(() => {
+    const ua =navigator.userAgent;
+    setIsMobile(/iphone|ipad|ipod|Android/i.test(ua));
+    setIsIOS(/iphone|ipad|ipod/i.test(ua));
+  }, []);
 
   // Listen for PWA install event
   useEffect(() => {
@@ -44,9 +53,11 @@ export default function App() {
         <Navbar />
         {/* Show install button if PWA install is available */}
         {showInstallBtn && (
-          <div className="p-2 bg-yellow-500 text-white text-center font-semibold cursor-pointer animate-bounce mb-4 rounded shadow" 
-          onClick={handleInstallClick}>
-            Install WatchRadar
+          <div 
+            className="p-2 bg-yellow-500 text-white text-center font-semibold cursor-pointer animate-bounce mb-4 rounded shadow" 
+            onClick={handleInstallClick}
+          >
+            🚀 Install WatchRadar
           </div>
         )}
         <div className="p-4">
