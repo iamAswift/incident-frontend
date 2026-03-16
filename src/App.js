@@ -12,16 +12,16 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBtn, setShowInstallBtn] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const [isIos, setIsIos] = useState(false);
 
-  // Detect if device is mobile and if it's iOS
+  // Detect mobile / iOS devices
   useEffect(() => {
-    const ua =navigator.userAgent;
-    setIsMobile(/iphone|ipad|ipod|Android/i.test(ua));
-    setIsIOS(/iphone|ipad|ipod/i.test(ua));
+    const ua = navigator.userAgent;
+    setIsMobile(/iPhone|iPad|iPod|Android/i.test(ua));
+    setIsIos(/iPhone|iPad|iPod/i.test(ua));
   }, []);
 
-  // Listen for PWA install event
+  // Listen for PWA install prompt
   useEffect(() => {
     const handler = (e) => {
       e.preventDefault();
@@ -29,10 +29,10 @@ export default function App() {
       setShowInstallBtn(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
-
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
+  // Handle install click
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -51,15 +51,26 @@ export default function App() {
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        {/* Show install button if PWA install is available */}
+
+        {/* PWA Install Button */}
         {showInstallBtn && (
-          <div 
-            className="p-2 bg-yellow-500 text-white text-center font-semibold cursor-pointer animate-bounce mb-4 rounded shadow" 
-            onClick={handleInstallClick}
-          >
-            🚀 Install WatchRadar
+          <div className="p-2 text-white text-center font-semibold rounded shadow m-4">
+            {isIos ? (
+              <div className="bg-blue-500 animate-pulse">
+                📱 Tap Share → Add to Home Screen to install WatchRadar
+              </div>
+            ) : (
+              <div
+                className="bg-yellow-500 cursor-pointer animate-bounce"
+                onClick={handleInstallClick}
+              >
+                🚀 Install WatchRadar
+              </div>
+            )}
           </div>
         )}
+
+        {/* Main content */}
         <div className="p-4">
           <Routes>
             <Route path="/" element={<ManagerDashboard />} />
