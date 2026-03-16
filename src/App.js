@@ -59,6 +59,13 @@ export default function App() {
               <div className="bg-blue-500 animate-pulse">
                 📱 Tap Share → Add to Home Screen to install WatchRadar
               </div>
+            ) : isMobile ? (
+              <div
+                className="bg-green-500 cursor-pointer animate-pulse"
+                onClick={handleInstallClick}
+              >
+                📱 Install WatchRadar on your mobile 
+              </div>
             ) : (
               <div
                 className="bg-yellow-500 cursor-pointer animate-bounce"
