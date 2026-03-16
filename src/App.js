@@ -11,28 +11,32 @@ import { register } from "./serviceWorkerRegistration"; // PWA service worker
 export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBtn, setShowInstallBtn] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isIos, setIsIos] = useState(false);
 
-  // Detect mobile / iOS devices
+  // Detect platform
+  const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
+  // Register service worker
   useEffect(() => {
-    const ua = navigator.userAgent;
-    setIsMobile(/iPhone|iPad|iPod|Android/i.test(ua));
-    setIsIos(/iPhone|iPad|iPod/i.test(ua));
+    register();
   }, []);
 
-  // Listen for PWA install prompt
+  // Android: Listen for beforeinstallprompt
   useEffect(() => {
+    if (!isAndroid) return;
+
     const handler = (e) => {
       e.preventDefault();
+      console.log("beforeinstallprompt fired:", e);
       setDeferredPrompt(e);
       setShowInstallBtn(true);
     };
+
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+  }, [isAndroid]);
 
-  // Handle install click
+  // Handle install click (Android)
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -42,40 +46,40 @@ export default function App() {
     setShowInstallBtn(false);
   };
 
-  // Register service worker
-  useEffect(() => {
-    register();
-  }, []);
-
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
 
         {/* PWA Install Button */}
-        {showInstallBtn && (
-          <div className="p-2 text-white text-center font-semibold rounded shadow m-4">
-            {isIos ? (
-              <div className="bg-blue-500 animate-pulse">
-                📱 Tap Share → Add to Home Screen to install WatchRadar
-              </div>
-            ) : isMobile ? (
-              <div
-                className="bg-green-500 cursor-pointer animate-pulse"
-                onClick={handleInstallClick}
-              >
-                📱 Install WatchRadar on your mobile 
-              </div>
-            ) : (
-              <div
-                className="bg-yellow-500 cursor-pointer animate-bounce"
-                onClick={handleInstallClick}
-              >
-                🚀 Install WatchRadar
-              </div>
-            )}
-          </div>
-        )}
+        <div className="p-4">
+          {/* iOS instruction */}
+          {isIos && (
+            <div className="p-2 bg-blue-500 text-white text-center font-semibold rounded shadow animate-pulse">
+              📱 Tap Share → Add to Home Screen to install WatchRadar
+            </div>
+          )}
+
+          {/* Android install button */}
+          {isAndroid && showInstallBtn && (
+            <div
+              className="p-2 bg-green-500 text-white text-center font-semibold rounded shadow cursor-pointer animate-pulse"
+              onClick={handleInstallClick}
+            >
+              📱 Install WatchRadar on your mobile
+            </div>
+          )}
+
+          {/* Desktop install button */}
+          {!isIos && !isAndroid && showInstallBtn && (
+            <div
+              className="p-2 bg-yellow-500 text-white text-center font-semibold rounded shadow cursor-pointer animate-bounce"
+              onClick={handleInstallClick}
+            >
+              🚀 Install WatchRadar
+            </div>
+          )}
+        </div>
 
         {/* Main content */}
         <div className="p-4">
