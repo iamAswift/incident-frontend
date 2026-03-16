@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Estate Security",
+  "name": "EstateSafe",
+  "description": "Digital Security reporting and monitoring for estates",
   "icons": [
     {
       "src": "favicon.ico",

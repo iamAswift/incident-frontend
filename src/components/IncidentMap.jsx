@@ -95,7 +95,8 @@ function AddressSearch({ onLocationSelect }) {
     btn.style.padding = "2px 6px";
     btn.style.borderRadius = "4px";
     btn.style.border = "1px solid #ccc";
-
+    
+    let searchMaker;
     btn.onclick = () => {
       const query = input.value;
       if (!query) return;
@@ -113,7 +114,7 @@ function AddressSearch({ onLocationSelect }) {
         console.log("location found:", latlng);
 
         if (result.bbox) {
-          const [south, north, west, east] = result.bbox;
+          const [south, west, north, east] = result.bbox;
           map.fitBounds([
             [south, west],
             [north, east],
@@ -121,7 +122,12 @@ function AddressSearch({ onLocationSelect }) {
         } else {
           map.setView(latlng, 15);
         }
-        L.marker(latlng).addTo(map);
+
+        // Move or create the marker for the searched location
+        if (searchMaker) {
+          searchMaker.setLatLng(latlng);
+        } else {
+          searchMaker = L.marker(latlng).addTo(map);
         if (onLocationSelect) onLocationSelect({ lat: latlng.lat, lng: latlng.lng });
       });
     };
