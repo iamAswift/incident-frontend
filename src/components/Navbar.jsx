@@ -1,30 +1,17 @@
-import { Link } from "react-router-dom";
+// src/components/Navbar.jsx
+import React from "react";
 
 export default function Navbar() {
   return (
-    <nav className="bg-blue-900 text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-
-        {/* Logo / Brand */}
-        <div className="font-bold text-xl tracking-wide">
-          📍 WatchRadar
-        </div>
-
-        {/* Navigation */}
-        <div className="flex space-x-6 text-sm md:text-base">
-          <Link to="/" className="hover:text-green-300 transition">
-            Map
-          </Link>
-
-          <Link to="/UserDashboard" className="hover:text-green-300 transition">
-            Dashboard
-          </Link>
-
-          <Link to="/developer-manifesto" className="hover:text-green-300 transition">
-            Mission
-          </Link>
-        </div>
-
+    <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
+      <h1 className="text-lg font-bold flex items-center space-x-2">
+        <span>📍</span>
+        <span>WatchRadar</span>
+      </h1>
+      <div className="flex space-x-4">
+        <a href="/" className="hover:underline">Map</a>
+        <a href="/manager" className="hover:underline">Dashboard</a>
+        <a href="/report" className="hover:underline">Report Incident</a>
       </div>
     </nav>
   );

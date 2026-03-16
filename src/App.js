@@ -42,8 +42,10 @@ export default function App() {
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
+        {/* Show install button if PWA install is available */}
         {showInstallBtn && (
-          <div className="p-2 bg-blue-500 text-white text-center cursor-pointer" onClick={handleInstallClick}>
+          <div className="p-2 bg-yellow-500 text-white text-center font-semibold cursor-pointer animate-bounce mb-4 rounded shadow" 
+          onClick={handleInstallClick}>
             Install WatchRadar
           </div>
         )}
