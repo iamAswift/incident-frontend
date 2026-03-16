@@ -1,67 +1,103 @@
-// src/components/ManagerDashboard.jsx
-import React, { useState } from "react";
+// src/components/IncidentForm.jsx
+import React, { useState, useEffect } from "react";
+import { supabase } from "../supabaseClient"; // make sure you have this configured
 
-export default function ManagerDashboard() {
+export default function IncidentForm() {
   const [estates, setEstates] = useState([]);
-  const [estateName, setEstateName] = useState("");
-  const [address, setAddress] = useState("");
+  const [estateId, setEstateId] = useState("");
+  const [type, setType] = useState("");
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  const addEstate = () => {
-    if (!estateName || !address) return;
-    setEstates((prev) => [...prev, { id: prev.length + 1, estateName, address }]);
-    setEstateName(""); setAddress("");
+  // Fetch estates from Supabase
+  useEffect(() => {
+    const fetchEstates = async () => {
+      const { data, error } = await supabase
+        .from("estates")
+        .select("id, estate_name")
+        .order("estate_name");
+      if (error) console.error("Error fetching estates:", error);
+      else setEstates(data);
+    };
+    fetchEstates();
+  }, []);
+
+  const submitReport = async () => {
+    if (!estateId || !type || !description) return alert("Please fill all fields");
+    setLoading(true);
+    const { data, error } = await supabase.from("reports").insert([
+      { estate_id: estateId, type, description }
+    ]);
+    setLoading(false);
+    if (error) {
+      console.error("Error submitting report:", error);
+      alert("Failed to submit report. Try again.");
+    } else {
+      setSuccess(true);
+      setEstateId("");
+      setType("");
+      setDescription("");
+      setTimeout(() => setSuccess(false), 3000);
+    }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4 flex items-center space-x-2">
-        🏠 Manager Dashboard
-      </h2>
+    <div className="p-4 max-w-md mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Report Incident</h2>
 
-      {/* Add Estate */}
-      <div className="bg-white p-4 rounded shadow mb-6">
-        <h3 className="font-semibold mb-2">Add Estate</h3>
-        <input
-          type="text"
-          placeholder="Estate Name"
-          value={estateName}
-          onChange={(e) => setEstateName(e.target.value)}
-          className="border px-2 py-1 mr-2 rounded w-full mb-2"
-        />
-        <input
-          type="text"
-          placeholder="Address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          className="border px-2 py-1 mr-2 rounded w-full mb-2"
-        />
-        <button
-          onClick={addEstate}
-          className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+      {success && (
+        <div className="bg-green-500 text-white p-2 rounded mb-4 text-center">
+          ✅ Report submitted successfully!
+        </div>
+      )}
+
+      <div className="mb-2">
+        <select
+          value={estateId}
+          onChange={(e) => setEstateId(e.target.value)}
+          className="border px-2 py-1 rounded w-full"
         >
-          ➕ Add Estate
-        </button>
+          <option value="">Select Estate</option>
+          {estates.map((e) => (
+            <option key={e.id} value={e.id}>{e.estate_name}</option>
+          ))}
+        </select>
       </div>
 
-      {/* Registered Estates */}
-      <div className="bg-white p-4 rounded shadow">
-        <h3 className="font-semibold mb-2">Registered Estates</h3>
-        {estates.length === 0 ? (
-          <p className="text-gray-500">No estates registered yet.</p>
-        ) : (
-          <ul className="space-y-2">
-            {estates.map((e) => (
-              <li key={e.id} className="border p-2 rounded flex justify-between items-center">
-                <div>
-                  <strong>{e.estateName}</strong> <br />
-                  <small>{e.address}</small>
-                </div>
-                <span>📍</span>
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="mb-2">
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          className="border px-2 py-1 rounded w-full"
+        >
+          <option value="">Select Type</option>
+          <option value="Security Breach">Security Breach</option>
+          <option value="Theft/Vandalism">Theft/Vandalism</option>
+          <option value="Fire Incident">Fire Incident</option>
+          <option value="Medical Emergency">Medical Emergency</option>
+          <option value="Suspicious Activity">Suspicious Activity</option>
+          <option value="Noise">Noise</option>
+          <option value="Illegal Gathering">Illegal Gathering</option>
+        </select>
       </div>
+
+      <div className="mb-2">
+        <textarea
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="border px-2 py-1 rounded w-full"
+        />
+      </div>
+
+      <button
+        onClick={submitReport}
+        className={`w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+        disabled={loading}
+      >
+        {loading ? "Submitting..." : "Submit Report"}
+      </button>
     </div>
   );
 }
