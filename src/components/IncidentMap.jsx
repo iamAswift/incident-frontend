@@ -79,6 +79,7 @@ function AddressSearch({ onLocationSelect }) {
       console.warn("Map not available for AddressSearch");
       return;
     }
+
     const control = L.Control.geocoder({
       defaultMarkGeocode: false,
       geocoder: L.Control.Geocoder.nominatim(),
@@ -86,7 +87,6 @@ function AddressSearch({ onLocationSelect }) {
       position: "topright",
     }).addTo(map);
 
-    // Add a clickable search button
     const input = control.getContainer().querySelector("input");
     const btn = document.createElement("button");
     btn.innerHTML = "🔍";
@@ -95,8 +95,9 @@ function AddressSearch({ onLocationSelect }) {
     btn.style.padding = "2px 6px";
     btn.style.borderRadius = "4px";
     btn.style.border = "1px solid #ccc";
-    
-    let searchMaker;
+
+    let searchMarker;
+
     btn.onclick = () => {
       const query = input.value;
       if (!query) return;
@@ -104,10 +105,11 @@ function AddressSearch({ onLocationSelect }) {
 
       control.options.geocoder.geocode(query, (results) => {
         console.log("Geocode results:", results);
-        if (!results || results.length === 0){
+        if (!results || results.length === 0) {
           console.log("No location found");
           return;
-        } 
+        }
+
         const result = results[0];
         const latlng = result.center;
 
@@ -123,12 +125,17 @@ function AddressSearch({ onLocationSelect }) {
           map.setView(latlng, 15);
         }
 
-        // Move or create the marker for the searched location
-        if (searchMaker) {
-          searchMaker.setLatLng(latlng);
+        // Move or create marker
+        if (searchMarker) {
+          searchMarker.setLatLng(latlng);
         } else {
-          searchMaker = L.marker(latlng).addTo(map);
-        if (onLocationSelect) onLocationSelect({ lat: latlng.lat, lng: latlng.lng });
+          searchMarker = L.marker(latlng).addTo(map);
+        }
+
+        // Notify parent
+        if (onLocationSelect) {
+          onLocationSelect({ lat: latlng.lat, lng: latlng.lng });
+        }
       });
     };
 
