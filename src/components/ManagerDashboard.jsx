@@ -1,103 +1,109 @@
-// src/components/IncidentForm.jsx
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient"; // make sure you have this configured
+import { useSearchParams } from "react-router-dom";
+import { getReports, updateReportStatus } from "../services/api";
 
-export default function IncidentForm() {
-  const [estates, setEstates] = useState([]);
-  const [estateId, setEstateId] = useState("");
-  const [type, setType] = useState("");
-  const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+export default function ManagerDashboard() {
 
-  // Fetch estates from Supabase
-  useEffect(() => {
-    const fetchEstates = async () => {
-      const { data, error } = await supabase
-        .from("estates")
-        .select("id, estate_name")
-        .order("estate_name");
-      if (error) console.error("Error fetching estates:", error);
-      else setEstates(data);
-    };
-    fetchEstates();
-  }, []);
+  const [searchParams] = useSearchParams();
+  const estateId = searchParams.get("estateId");
 
-  const submitReport = async () => {
-    if (!estateId || !type || !description) return alert("Please fill all fields");
-    setLoading(true);
-    const { data, error } = await supabase.from("reports").insert([
-      { estate_id: estateId, type, description }
-    ]);
-    setLoading(false);
-    if (error) {
-      console.error("Error submitting report:", error);
-      alert("Failed to submit report. Try again.");
-    } else {
-      setSuccess(true);
-      setEstateId("");
-      setType("");
-      setDescription("");
-      setTimeout(() => setSuccess(false), 3000);
+  const [reports, setReports] = useState([]);
+
+  const fetchReports = async () => {
+    try {
+      const res = await getReports(estateId);
+      setReports(res.data);
+    } catch (err) {
+      console.error("Failed to fetch reports", err);
     }
   };
 
+  const handleStatusUpdate = async (id, status) => {
+    try {
+      await updateReportStatus(id, status);
+      fetchReports(); // refresh after update
+    } catch (err) {
+      console.error("Failed to update status", err);
+    }
+  };
+
+  useEffect(() => {
+    if (estateId) fetchReports();
+  }, [estateId]);
+
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Report Incident</h2>
+    <div className="p-6 max-w-4xl mx-auto">
 
-      {success && (
-        <div className="bg-green-500 text-white p-2 rounded mb-4 text-center">
-          ✅ Report submitted successfully!
-        </div>
-      )}
+      <h2 className="text-3xl font-bold mb-6">
+        🏢 Manager Dashboard
+      </h2>
 
-      <div className="mb-2">
-        <select
-          value={estateId}
-          onChange={(e) => setEstateId(e.target.value)}
-          className="border px-2 py-1 rounded w-full"
-        >
-          <option value="">Select Estate</option>
-          {estates.map((e) => (
-            <option key={e.id} value={e.id}>{e.estate_name}</option>
-          ))}
-        </select>
+      <div className="bg-white p-6 rounded-xl shadow">
+
+        <h3 className="text-xl font-semibold mb-4">
+          Estate #{estateId} Reports
+        </h3>
+
+        {reports.length === 0 ? (
+          <p className="text-gray-500">No reports available.</p>
+        ) : (
+
+          <ul className="space-y-4">
+
+            {reports.map((r) => (
+
+              <li key={r.id} className="border p-4 rounded-lg">
+
+                <div className="flex justify-between">
+
+                  <strong>{r.type}</strong>
+
+                  <span className="text-sm text-gray-500">
+                    {new Date(r.created_at).toLocaleString()}
+                  </span>
+
+                </div>
+
+                <p className="text-gray-600 mt-2">
+                  {r.description}
+                </p>
+
+                <div className="flex justify-between items-center mt-3">
+
+                  <span className="text-xs bg-yellow-400 px-2 py-1 rounded">
+                    {r.status}
+                  </span>
+
+                  <div className="space-x-2">
+
+                    <button
+                      onClick={() => handleStatusUpdate(r.id, "approved")}
+                      className="bg-green-500 text-white px-3 py-1 rounded"
+                    >
+                      Approve
+                    </button>
+
+                    <button
+                      onClick={() => handleStatusUpdate(r.id, "rejected")}
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                    >
+                      Reject
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+            ))}
+
+          </ul>
+
+        )}
+
       </div>
 
-      <div className="mb-2">
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="border px-2 py-1 rounded w-full"
-        >
-          <option value="">Select Type</option>
-          <option value="Security Breach">Security Breach</option>
-          <option value="Theft/Vandalism">Theft/Vandalism</option>
-          <option value="Fire Incident">Fire Incident</option>
-          <option value="Medical Emergency">Medical Emergency</option>
-          <option value="Suspicious Activity">Suspicious Activity</option>
-          <option value="Noise">Noise</option>
-          <option value="Illegal Gathering">Illegal Gathering</option>
-        </select>
-      </div>
-
-      <div className="mb-2">
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="border px-2 py-1 rounded w-full"
-        />
-      </div>
-
-      <button
-        onClick={submitReport}
-        className={`w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-        disabled={loading}
-      >
-        {loading ? "Submitting..." : "Submit Report"}
-      </button>
     </div>
   );
 }

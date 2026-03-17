@@ -8,6 +8,25 @@ const API = axios.create({
 export const registerUser = (data) => API.post("/users/register", data);
 export const loginUser = (data) => API.post("/users/login", data);
 
+
+
+// ===== Estates =====
+export const getEstates = () => API.get("/estates"); // returns array of Estate objects
+
+// ===== Security Officers =====
+export const getSecurityOfficers = (estateId) => API.get(`/security_officers?estate_id=${estateId}`);
+
+// ===== Reports =====
+export const getReports = (estateId) => API.get(`/reports?estate_id=${estateId}`);
+export const createReport = (data) => {
+  return API.post("/reports", data, {
+    headers: { "Content-Type": "application/json" },
+  });
+};
+export const updateReportStatus = (reportId, status) => {
+  return API.patch(`/reports/${reportId}/status`, { status });
+};
+
 // Incidents
 export const getIncidents = () => API.get("/incidents");
 

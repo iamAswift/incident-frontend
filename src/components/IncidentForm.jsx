@@ -1,6 +1,5 @@
-// src/components/IncidentForm.jsx
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabaseClient"; // make sure you have this configured
+import { getEstates, createReport } from "../services/api";
 
 export default function IncidentForm() {
   const [estates, setEstates] = useState([]);
@@ -10,35 +9,36 @@ export default function IncidentForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Fetch estates from Supabase
+  // Fetch estates from backend
   useEffect(() => {
     const fetchEstates = async () => {
-      const { data, error } = await supabase
-        .from("estates")
-        .select("id, estate_name")
-        .order("estate_name");
-      if (error) console.error("Error fetching estates:", error);
-      else setEstates(data);
+      try {
+        const res = await getEstates();
+        setEstates(res.data);
+      } catch (err) {
+        console.error("Error fetching estates:", err);
+      }
     };
     fetchEstates();
   }, []);
 
   const submitReport = async () => {
     if (!estateId || !type || !description) return alert("Please fill all fields");
+
     setLoading(true);
-    const { data, error } = await supabase.from("reports").insert([
-      { estate_id: estateId, type, description }
-    ]);
-    setLoading(false);
-    if (error) {
-      console.error("Error submitting report:", error);
-      alert("Failed to submit report. Try again.");
-    } else {
+
+    try {
+      await createReport({ estate_id: estateId, type, description });
       setSuccess(true);
       setEstateId("");
       setType("");
       setDescription("");
       setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      console.error("Error submitting report:", err);
+      alert("Failed to submit report. Try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
