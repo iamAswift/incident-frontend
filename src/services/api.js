@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const API = axios.create({
   baseURL: "https://incident-backend-8yb5.onrender.com",
@@ -10,20 +10,18 @@ export const loginUser = (data) => API.post("/users/login", data);
 
 // ===== Estates =====
 export const getEstates = () => API.get("/estates"); // returns array of Estate objects
-export const createEstate = (data) => {
-  return API.post("/estates", data, {
+export const createEstate = (data) =>
+  API.post("/estates", data, {
     headers: { "Content-Type": "application/json" },
   });
-};
 
 // ===== Security Officers =====
 export const getSecurityOfficers = (estateId) =>
-  API.get(`/security_officers?estate_id=${estateId}`);
-export const createSecurity = (data) => {
-  return API.post("/security_officers", data, {
+  API.get(`/estates/security_officers?estate_id=${estateId}`);
+export const createSecurity = (data) =>
+  API.post("/estates/security_officers", data, {
     headers: { "Content-Type": "application/json" },
   });
-};
 
 // ===== Reports =====
 export const getReports = (estateId) =>
