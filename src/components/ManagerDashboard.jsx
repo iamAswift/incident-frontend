@@ -3,9 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import {
   getReports,
   updateReportStatus,
-  createEstate,
-  createSecurity,
-  getEstateDetails,
+  getEstates,
+  getSecurityOfficers,
 } from "../services/api";
 
 export default function ManagerDashboard() {
@@ -14,12 +13,7 @@ export default function ManagerDashboard() {
 
   const [reports, setReports] = useState([]);
   const [estate, setEstate] = useState(null);
-
-  // form state
-  const [estateName, setEstateName] = useState("");
-  const [address, setAddress] = useState("");
-  const [officerName, setOfficerName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [officers, setOfficers] = useState([]);
 
   // 🔥 FETCH REPORTS
   const fetchReports = useCallback(async () => {
@@ -31,11 +25,22 @@ export default function ManagerDashboard() {
     }
   }, [estateId]);
 
-  // 🔥 FETCH ESTATE DETAILS
+  // 🔥 FETCH ESTATE FROM LIST
   const fetchEstate = useCallback(async () => {
     try {
-      const res = await getEstateDetails(estateId);
-      setEstate(res.data);
+      const res = await getEstates();
+      const found = res.data.find(e => String(e.id) === String(estateId));
+      setEstate(found);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [estateId]);
+
+  // 🔥 FETCH SECURITY OFFICERS
+  const fetchOfficers = useCallback(async () => {
+    try {
+      const res = await getSecurityOfficers(estateId);
+      setOfficers(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -45,38 +50,9 @@ export default function ManagerDashboard() {
     if (estateId) {
       fetchReports();
       fetchEstate();
+      fetchOfficers();
     }
-  }, [estateId, fetchReports, fetchEstate]);
-
-  // 🔥 CREATE ESTATE + SECURITY
-  const handleCreateEstate = async () => {
-    try {
-      const res = await createEstate({
-        estate_name: estateName,
-        address: address,
-      });
-
-      const newEstateId = res.data.id;
-
-      if (officerName) {
-        await createSecurity({
-          estate_id: newEstateId,
-          name: officerName,
-          phone: phone,
-        });
-      }
-
-      alert("Estate + Security Created ✅");
-
-      setEstateName("");
-      setAddress("");
-      setOfficerName("");
-      setPhone("");
-
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  }, [estateId, fetchReports, fetchEstate, fetchOfficers]);
 
   // 🔥 UPDATE REPORT STATUS
   const handleStatusUpdate = async (id, status) => {
@@ -100,52 +76,9 @@ export default function ManagerDashboard() {
         🏢 Estate Manager Dashboard
       </h2>
 
-      {/* ➕ CREATE ESTATE */}
-      <div className="bg-white p-6 rounded-xl shadow mb-6">
-        <h3 className="text-xl font-semibold mb-4">
-          Create Estate & Assign Security
-        </h3>
-
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            placeholder="Estate Name"
-            value={estateName}
-            onChange={(e) => setEstateName(e.target.value)}
-            className="border p-2 rounded"
-          />
-
-          <input
-            placeholder="Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="border p-2 rounded"
-          />
-
-          <input
-            placeholder="Security Officer Name"
-            value={officerName}
-            onChange={(e) => setOfficerName(e.target.value)}
-            className="border p-2 rounded"
-          />
-
-          <input
-            placeholder="Phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="border p-2 rounded"
-          />
-        </div>
-
-        <button
-          onClick={handleCreateEstate}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Create Estate
-        </button>
-      </div>
-
       {/* 📊 STATS */}
       <div className="grid grid-cols-3 gap-4 mb-6">
+
         <div className="bg-yellow-100 p-4 rounded-xl">
           <h4>Pending</h4>
           <p className="text-2xl">{pending.length}</p>
@@ -160,10 +93,12 @@ export default function ManagerDashboard() {
           <h4>Rejected</h4>
           <p className="text-2xl">{rejected.length}</p>
         </div>
+
       </div>
 
       {/* 🏢 ESTATE INFO */}
       <div className="bg-white p-4 rounded-xl shadow mb-6">
+
         <h3 className="font-semibold text-lg">
           {estate?.estate_name || `Estate #${estateId}`}
         </h3>
@@ -173,12 +108,17 @@ export default function ManagerDashboard() {
         </p>
 
         <p className="text-gray-500 text-sm">
-          Security Officer: {estate?.security_officer || "Not assigned"}
+          Security Officers:
+          {officers.length === 0
+            ? " Not assigned"
+            : officers.map(o => ` ${o.name}`).join(", ")}
         </p>
+
       </div>
 
       {/* 🚨 REPORTS */}
       <div className="bg-white p-6 rounded-xl shadow">
+
         <h3 className="text-xl font-semibold mb-4">
           All Reports
         </h3>
@@ -187,6 +127,7 @@ export default function ManagerDashboard() {
           <p>No reports available.</p>
         ) : (
           <ul className="space-y-4">
+
             {reports.map((r) => (
               <li key={r.id} className="border p-4 rounded-lg">
 
@@ -223,8 +164,10 @@ export default function ManagerDashboard() {
 
               </li>
             ))}
+
           </ul>
         )}
+
       </div>
 
     </div>
