@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getReports } from "../services/api";
 
@@ -8,22 +8,24 @@ export default function SecurityDashboard() {
 
   const [reports, setReports] = useState([]);
 
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try {
       const res = await getReports(estateId);
-      setReports(res.data); // data from your backend
+      setReports(res.data);
     } catch (err) {
       console.error("Failed to fetch reports", err);
     }
-  };
+  }, [estateId]);
 
   useEffect(() => {
     if (estateId) fetchReports();
-  }, [estateId]);
+  }, [estateId, fetchReports]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6">🔒 Security Dashboard</h2>
+      <h2 className="text-3xl font-bold mb-6">
+        🔒 Security Dashboard
+      </h2>
 
       <div className="bg-white p-6 rounded-xl shadow">
         <h3 className="text-xl font-semibold mb-4">
@@ -31,7 +33,9 @@ export default function SecurityDashboard() {
         </h3>
 
         {reports.length === 0 ? (
-          <p className="text-gray-500">No incidents reported yet.</p>
+          <p className="text-gray-500">
+            No incidents reported yet.
+          </p>
         ) : (
           <ul className="space-y-4">
             {reports.map((r) => (
@@ -43,7 +47,9 @@ export default function SecurityDashboard() {
                   </span>
                 </div>
 
-                <p className="text-gray-600 mt-2">{r.description}</p>
+                <p className="text-gray-600 mt-2">
+                  {r.description}
+                </p>
 
                 <span className="text-xs bg-yellow-400 px-2 py-1 rounded">
                   {r.status}
