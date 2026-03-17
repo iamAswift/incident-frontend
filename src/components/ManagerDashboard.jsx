@@ -13,51 +13,48 @@ export default function ManagerDashboard() {
   const [searchParams] = useSearchParams();
   const estateIdParam = searchParams.get("estateId");
 
-  // States
   const [reports, setReports] = useState([]);
   const [estates, setEstates] = useState([]);
   const [selectedEstateId, setSelectedEstateId] = useState(estateIdParam || "");
   const [securityOfficers, setSecurityOfficers] = useState([]);
 
-  // Form states for creating estate
   const [estateName, setEstateName] = useState("");
   const [address, setAddress] = useState("");
   const [officerName, setOfficerName] = useState("");
   const [phone, setPhone] = useState("");
 
-  // Fetch all estates
+  // 👤 Simulated manager_id (later replace with auth user)
+  const managerId = "550e8400-e29b-41d4-a716-446655440000";
+
   const fetchEstates = useCallback(async () => {
     try {
       const res = await getEstates();
       setEstates(res.data);
     } catch (err) {
-      console.error("Failed to fetch estates", err);
+      console.error(err);
     }
   }, []);
 
-  // Fetch reports for selected estate
   const fetchReports = useCallback(async () => {
     if (!selectedEstateId) return;
     try {
       const res = await getReports(selectedEstateId);
       setReports(res.data);
     } catch (err) {
-      console.error("Failed to fetch reports", err);
+      console.error(err);
     }
   }, [selectedEstateId]);
 
-  // Fetch security officers for selected estate
   const fetchSecurityOfficers = useCallback(async () => {
     if (!selectedEstateId) return;
     try {
       const res = await getSecurityOfficers(selectedEstateId);
       setSecurityOfficers(res.data);
     } catch (err) {
-      console.error("Failed to fetch security officers", err);
+      console.error(err);
     }
   }, [selectedEstateId]);
 
-  // Initial load
   useEffect(() => {
     fetchEstates();
   }, [fetchEstates]);
@@ -69,20 +66,19 @@ export default function ManagerDashboard() {
     }
   }, [selectedEstateId, fetchReports, fetchSecurityOfficers]);
 
-  // Handle report status update
   const handleStatusUpdate = async (id, status) => {
-    try {
-      await updateReportStatus(id, status);
-      fetchReports();
-    } catch (err) {
-      console.error(err);
-    }
+    await updateReportStatus(id, status);
+    fetchReports();
   };
 
-  // Handle estate + security creation
   const handleCreateEstate = async () => {
     try {
-      const res = await createEstate({ estate_name: estateName, address });
+      const res = await createEstate({
+        estate_name: estateName,
+        address,
+        manager_id: managerId,
+      });
+
       const newEstateId = res.data.id;
 
       if (officerName) {
@@ -93,9 +89,8 @@ export default function ManagerDashboard() {
         });
       }
 
-      alert("Estate + Security Created ✅");
+      alert("✅ Estate & Security Created");
 
-      // Reset form
       setEstateName("");
       setAddress("");
       setOfficerName("");
@@ -104,65 +99,77 @@ export default function ManagerDashboard() {
       fetchEstates();
     } catch (err) {
       console.error(err);
-      alert("Failed to create estate/security");
+      alert("❌ Failed to create estate");
     }
   };
 
-  // Stats
   const pending = reports.filter((r) => r.status === "reported");
   const approved = reports.filter((r) => r.status === "approved");
   const rejected = reports.filter((r) => r.status === "rejected");
 
-  return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6">🏢 Estate Manager Dashboard</h2>
+  const selectedEstate = estates.find(
+    (e) => e.id === Number(selectedEstateId)
+  );
 
-      {/* ➕ Create Estate */}
-      <div className="bg-white p-6 rounded-xl shadow mb-6">
-        <h3 className="text-xl font-semibold mb-4">Create Estate & Assign Security</h3>
-        <div className="grid grid-cols-2 gap-4">
+  return (
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-3xl font-bold">🏢 Estate Manager Dashboard</h1>
+        <p className="text-gray-500">
+          Monitor incidents, manage estates, and improve resident safety
+        </p>
+      </div>
+
+      {/* CREATE ESTATE */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg">
+        <h2 className="text-xl font-semibold mb-4">
+          ➕ Create Estate & Assign Security
+        </h2>
+
+        <div className="grid md:grid-cols-4 gap-4">
           <input
             placeholder="Estate Name"
             value={estateName}
             onChange={(e) => setEstateName(e.target.value)}
-            className="border p-2 rounded"
+            className="border p-3 rounded-lg"
           />
           <input
             placeholder="Address"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className="border p-2 rounded"
+            className="border p-3 rounded-lg"
           />
           <input
-            placeholder="Security Officer Name"
+            placeholder="Security Officer"
             value={officerName}
             onChange={(e) => setOfficerName(e.target.value)}
-            className="border p-2 rounded"
+            className="border p-3 rounded-lg"
           />
           <input
             placeholder="Phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="border p-2 rounded"
+            className="border p-3 rounded-lg"
           />
         </div>
+
         <button
           onClick={handleCreateEstate}
-          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
         >
           Create Estate
         </button>
       </div>
 
-      {/* ➡️ Select Estate */}
-      <div className="bg-white p-4 rounded-xl shadow mb-6">
-        <label className="font-semibold mr-2">Select Estate:</label>
+      {/* SELECT ESTATE */}
+      <div className="bg-white p-4 rounded-xl shadow">
         <select
           value={selectedEstateId}
           onChange={(e) => setSelectedEstateId(e.target.value)}
-          className="border p-2 rounded"
+          className="w-full border p-3 rounded-lg"
         >
-          <option value="">--Choose Estate--</option>
+          <option value="">-- Select Estate --</option>
           {estates.map((e) => (
             <option key={e.id} value={e.id}>
               {e.estate_name}
@@ -171,78 +178,85 @@ export default function ManagerDashboard() {
         </select>
       </div>
 
-      {/* 📊 Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-yellow-100 p-4 rounded-xl">
-          <h4>Pending</h4>
-          <p className="text-2xl">{pending.length}</p>
+      {/* STATS */}
+      <div className="grid md:grid-cols-3 gap-4">
+        <div className="bg-yellow-100 p-5 rounded-xl shadow">
+          <p className="text-sm text-gray-600">Pending Reports</p>
+          <h2 className="text-3xl font-bold">{pending.length}</h2>
         </div>
-        <div className="bg-green-100 p-4 rounded-xl">
-          <h4>Approved</h4>
-          <p className="text-2xl">{approved.length}</p>
+        <div className="bg-green-100 p-5 rounded-xl shadow">
+          <p className="text-sm text-gray-600">Approved</p>
+          <h2 className="text-3xl font-bold">{approved.length}</h2>
         </div>
-        <div className="bg-red-100 p-4 rounded-xl">
-          <h4>Rejected</h4>
-          <p className="text-2xl">{rejected.length}</p>
+        <div className="bg-red-100 p-5 rounded-xl shadow">
+          <p className="text-sm text-gray-600">Rejected</p>
+          <h2 className="text-3xl font-bold">{rejected.length}</h2>
         </div>
       </div>
 
-      {/* 🏢 Estate Info */}
-      <div className="bg-white p-4 rounded-xl shadow mb-6">
-        {selectedEstateId ? (
+      {/* ESTATE DETAILS */}
+      <div className="bg-white p-6 rounded-xl shadow">
+        {selectedEstate ? (
           <>
-            <h3 className="font-semibold text-lg">
-              {estates.find((e) => e.id === Number(selectedEstateId))?.estate_name}
-            </h3>
-            <p className="text-gray-500 text-sm">
-              Address: {estates.find((e) => e.id === Number(selectedEstateId))?.address || "N/A"}
-            </p>
-            <p className="text-gray-500 text-sm">
-              Security Officers:{" "}
+            <h2 className="text-xl font-semibold">
+              {selectedEstate.estate_name}
+            </h2>
+            <p className="text-gray-500">{selectedEstate.address}</p>
+
+            <div className="mt-3">
+              <strong>Security Team:</strong>{" "}
               {securityOfficers.length > 0
                 ? securityOfficers.map((o) => o.name).join(", ")
                 : "Not assigned"}
-            </p>
+            </div>
           </>
         ) : (
-          <p>Select an estate to see details</p>
+          <p className="text-gray-500">
+            Select an estate to view details
+          </p>
         )}
       </div>
 
-      {/* 🚨 Reports */}
+      {/* REPORTS */}
       <div className="bg-white p-6 rounded-xl shadow">
-        <h3 className="text-xl font-semibold mb-4">All Reports</h3>
+        <h2 className="text-xl font-semibold mb-4">🚨 Incident Reports</h2>
+
         {reports.length === 0 ? (
-          <p>No reports available.</p>
+          <p className="text-gray-500">No reports available</p>
         ) : (
-          <ul className="space-y-4">
+          <div className="space-y-4">
             {reports.map((r) => (
-              <li key={r.id} className="border p-4 rounded-lg">
+              <div key={r.id} className="border p-4 rounded-xl shadow-sm">
                 <div className="flex justify-between">
                   <strong>{r.type}</strong>
-                  <span>{new Date(r.created_at).toLocaleString()}</span>
+                  <span className="text-sm text-gray-500">
+                    {new Date(r.created_at).toLocaleString()}
+                  </span>
                 </div>
+
                 <p className="mt-2">{r.description}</p>
-                <div className="flex justify-between mt-3">
-                  <span>{r.status}</span>
-                  <div>
+
+                <div className="flex justify-between items-center mt-3">
+                  <span className="text-sm font-medium">{r.status}</span>
+
+                  <div className="space-x-2">
                     <button
                       onClick={() => handleStatusUpdate(r.id, "approved")}
-                      className="bg-green-500 text-white px-2 py-1 mr-2"
+                      className="bg-green-500 text-white px-3 py-1 rounded"
                     >
                       Approve
                     </button>
                     <button
                       onClick={() => handleStatusUpdate(r.id, "rejected")}
-                      className="bg-red-500 text-white px-2 py-1"
+                      className="bg-red-500 text-white px-3 py-1 rounded"
                     >
                       Reject
                     </button>
                   </div>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </div>

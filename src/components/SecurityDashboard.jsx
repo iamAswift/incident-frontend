@@ -21,42 +21,67 @@ export default function SecurityDashboard() {
     if (estateId) fetchReports();
   }, [estateId, fetchReports]);
 
-  return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6">
-        🔒 Security Dashboard
-      </h2>
+  const getStatusColor = (status) => {
+    if (status === "approved") return "bg-green-500";
+    if (status === "rejected") return "bg-red-500";
+    return "bg-yellow-500";
+  };
 
+  return (
+    <div className="p-6 max-w-6xl mx-auto space-y-6">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-3xl font-bold">🔒 Security Operations</h1>
+        <p className="text-gray-500">
+          Monitor and respond to incidents in real-time
+        </p>
+      </div>
+
+      {/* ESTATE INFO */}
+      <div className="bg-white p-5 rounded-xl shadow">
+        <h2 className="text-lg font-semibold">
+          Estate ID: {estateId || "Not selected"}
+        </h2>
+        <p className="text-sm text-gray-500">
+          Live incident feed for assigned estate
+        </p>
+      </div>
+
+      {/* REPORTS */}
       <div className="bg-white p-6 rounded-xl shadow">
-        <h3 className="text-xl font-semibold mb-4">
-          Incidents for Estate #{estateId}
-        </h3>
+        <h2 className="text-xl font-semibold mb-4">🚨 Active Incidents</h2>
 
         {reports.length === 0 ? (
-          <p className="text-gray-500">
-            No incidents reported yet.
-          </p>
+          <p className="text-gray-500">No incidents reported</p>
         ) : (
-          <ul className="space-y-4">
+          <div className="space-y-4">
             {reports.map((r) => (
-              <li key={r.id} className="border p-4 rounded-lg">
-                <div className="flex justify-between">
+              <div key={r.id} className="border p-4 rounded-xl shadow-sm">
+                <div className="flex justify-between items-center">
                   <strong>{r.type}</strong>
                   <span className="text-sm text-gray-500">
                     {new Date(r.created_at).toLocaleString()}
                   </span>
                 </div>
 
-                <p className="text-gray-600 mt-2">
-                  {r.description}
-                </p>
+                <p className="mt-2 text-gray-600">{r.description}</p>
 
-                <span className="text-xs bg-yellow-400 px-2 py-1 rounded">
-                  {r.status}
-                </span>
-              </li>
+                <div className="mt-3 flex justify-between items-center">
+                  <span
+                    className={`text-white text-xs px-3 py-1 rounded ${getStatusColor(
+                      r.status
+                    )}`}
+                  >
+                    {r.status.toUpperCase()}
+                  </span>
+
+                  <span className="text-xs text-gray-400">
+                    Incident ID: #{r.id}
+                  </span>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </div>

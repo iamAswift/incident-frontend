@@ -9,95 +9,108 @@ export default function IncidentForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Fetch estates from backend
   useEffect(() => {
     const fetchEstates = async () => {
       try {
         const res = await getEstates();
         setEstates(res.data);
       } catch (err) {
-        console.error("Error fetching estates:", err);
+        console.error(err);
       }
     };
     fetchEstates();
   }, []);
 
   const submitReport = async () => {
-    if (!estateId || !type || !description) return alert("Please fill all fields");
+    if (!estateId || !type || !description)
+      return alert("Please fill all fields");
 
     setLoading(true);
 
     try {
       await createReport({ estate_id: estateId, type, description });
+
       setSuccess(true);
       setEstateId("");
       setType("");
       setDescription("");
+
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      console.error("Error submitting report:", err);
-      alert("Failed to submit report. Try again.");
+      console.error(err);
+      alert("Failed to submit report");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Report Incident</h2>
+    <div className="p-6 max-w-md mx-auto space-y-6">
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-bold">🚨 Report an Incident</h1>
+        <p className="text-gray-500 text-sm">
+          Help keep your estate safe by reporting issues instantly
+        </p>
+      </div>
 
+      {/* SUCCESS */}
       {success && (
-        <div className="bg-green-500 text-white p-2 rounded mb-4 text-center">
-          ✅ Report submitted successfully!
+        <div className="bg-green-500 text-white p-3 rounded text-center">
+          ✅ Report submitted successfully
         </div>
       )}
 
-      <div className="mb-2">
+      {/* FORM */}
+      <div className="bg-white p-5 rounded-xl shadow space-y-4">
         <select
           value={estateId}
           onChange={(e) => setEstateId(e.target.value)}
-          className="border px-2 py-1 rounded w-full"
+          className="w-full border p-3 rounded-lg"
         >
           <option value="">Select Estate</option>
           {estates.map((e) => (
-            <option key={e.id} value={e.id}>{e.estate_name}</option>
+            <option key={e.id} value={e.id}>
+              {e.estate_name}
+            </option>
           ))}
         </select>
-      </div>
 
-      <div className="mb-2">
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="border px-2 py-1 rounded w-full"
+          className="w-full border p-3 rounded-lg"
         >
-          <option value="">Select Type</option>
-          <option value="Security Breach">Security Breach</option>
-          <option value="Theft/Vandalism">Theft/Vandalism</option>
-          <option value="Fire Incident">Fire Incident</option>
-          <option value="Medical Emergency">Medical Emergency</option>
-          <option value="Suspicious Activity">Suspicious Activity</option>
-          <option value="Noise">Noise</option>
-          <option value="Illegal Gathering">Illegal Gathering</option>
+          <option value="">Incident Type</option>
+          <option value="Security Breach">🔐 Security Breach</option>
+          <option value="Theft/Vandalism">🚔 Theft / Vandalism</option>
+          <option value="Fire Incident">🔥 Fire</option>
+          <option value="Medical Emergency">🚑 Medical</option>
+          <option value="Suspicious Activity">👀 Suspicious Activity</option>
+          <option value="Noise">🔊 Noise</option>
+          <option value="Illegal Gathering">⚠️ Illegal Gathering</option>
         </select>
-      </div>
 
-      <div className="mb-2">
         <textarea
-          placeholder="Description"
+          placeholder="Describe what happened..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="border px-2 py-1 rounded w-full"
+          className="w-full border p-3 rounded-lg"
+          rows={4}
         />
-      </div>
 
-      <button
-        onClick={submitReport}
-        className={`w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-        disabled={loading}
-      >
-        {loading ? "Submitting..." : "Submit Report"}
-      </button>
+        <button
+          onClick={submitReport}
+          disabled={loading}
+          className={`w-full py-3 rounded-lg text-white ${
+            loading
+              ? "bg-gray-400"
+              : "bg-yellow-500 hover:bg-yellow-600"
+          }`}
+        >
+          {loading ? "Submitting..." : "Submit Report"}
+        </button>
+      </div>
     </div>
   );
 }
